@@ -1,9 +1,10 @@
 // creating express server module based server we use es6 feature go to package.json and type=module
-
+import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
 import { connectDB } from "./config/db.js";
 import foodRouter from "./routes/foodRoute.js";
+dotenv.config();
 
 //app config
 
