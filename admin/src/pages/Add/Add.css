@@ -5,3 +5,36 @@
   color: #6d6d6d;
   font-size: 16px;
 }
+.add form {
+  gap: 20px;
+}
+.add-img-upload img {
+  width: 120px;
+  cursor: pointer;
+}
+.add-product-name,
+.add-product-description {
+  width: max(40%, 280 px);
+}
+.add-product-name input,
+.add-product-description textarea {
+  padding: 10px;
+}
+.add-category-price {
+  display: flex;
+  gap: 30px;
+}
+.add-category-price input,
+.add-category-price select {
+  max-width: 120px;
+  padding: 10px;
+  cursor: pointer;
+}
+.add-btn {
+  max-width: 120px;
+  border: none;
+  padding: 10px;
+  color: white;
+  background-color: black;
+  cursor: pointer;
+}
