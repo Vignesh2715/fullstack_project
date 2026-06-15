@@ -18,18 +18,34 @@ const StoreContextProvider = (props) => {
   //   }
   // };
 
-  const addToCart = (itemId) => {
+  const addToCart = async (itemId) => {
     setCartItems((prev) => ({
       ...prev,
       [itemId]: (prev[itemId] || 0) + 1,
     }));
+
+    if (token) {
+      await axios.post(
+        url + "/api/cart/add",
+        { itemId },
+        { headers: { token } },
+      );
+    }
   };
 
   // const removeFromCart = (itemId) => {
   //   setCartItems((prev) => ({ ...prev, [itemId]: prev[itemId] - 1 }));
   // };
 
-  const removeFromCart = (itemId) => {
+  const removeFromCart = async (itemId) => {
+    if (token) {
+      await axios.post(
+        url + "/api/cart/remove",
+        { itemId },
+        { headers: { token } },
+      );
+    }
+
     setCartItems((prev) => {
       if (prev[itemId] <= 1) {
         const updated = { ...prev };
@@ -57,20 +73,57 @@ const StoreContextProvider = (props) => {
     return totalAmount;
   };
 
+  // const fetchFoodList = async () => {
+  //   const response = await axios.get(url + "/api/food/list");
+  //   setFoodList(response.data.data);
+  // };
+
   const fetchFoodList = async () => {
-    const response = await axios.get(url + "/api/food/list");
-    setFoodList(response.data.data);
+    try {
+      const response = await axios.get(url + "/api/food/list");
+
+      if (response.data.success) {
+        setFoodList(response.data.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  const storedToken = localStorage.getItem("token");
+  const loadCartData = async (token) => {
+    const response = await axios.post(
+      url + "/api/cart/get",
+      {},
+      { headers: { token } },
+    );
+
+    setCartItems(response.data.cartData);
+  };
+
+  // const storedToken = localStorage.getItem("token");
+
+  // useEffect(() => {
+  //   async function loadData() {
+  //     await fetchFoodList();
+  //     if (storedToken) {
+  //       setToken(storedToken);
+  //     }
+  //   }
+  //   loadData();
+  // }, []);
 
   useEffect(() => {
     async function loadData() {
       await fetchFoodList();
+
+      const storedToken = localStorage.getItem("token");
+
       if (storedToken) {
         setToken(storedToken);
+        await loadCartData(storedToken);
       }
     }
+
     loadData();
   }, []);
 
