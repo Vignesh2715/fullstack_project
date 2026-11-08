@@ -6,8 +6,15 @@ import { StoreContext } from "../../context/StoreContext";
 const Navbar = ({ setShowLogin }) => {
   const [menu, setMenu] = useState("menu");
 
-  const { getTotalCartAmount, token, setToken, setCartItems } =
-    useContext(StoreContext);
+  // const { getTotalCartAmount, token, setToken, setCartItems } =
+  //   useContext(StoreContext);
+  const { cartItems, token, setToken, setCartItems } = useContext(StoreContext);
+
+  // total number of items in the cart (e.g. 2 pizzas + 1 cake = 3)
+  const cartCount = Object.values(cartItems).reduce(
+    (total, quantity) => total + quantity,
+    0,
+  );
 
   const navigate = useNavigate();
 
@@ -55,10 +62,24 @@ const Navbar = ({ setShowLogin }) => {
       <div className="navbar-right">
         <img src={assets.search_icon} alt="" />
         <div className="navbar-search-icon">
-          <Link to="/cart">
+          {/* <Link to="/cart">
             <img src={assets.basket_icon} alt="" />
           </Link>
-          <div className={getTotalCartAmount() === 0 ? "" : "dot"}></div>
+          <div className={getTotalCartAmount() === 0 ? "" : "dot"}></div> */}
+          <Link to="/cart">
+            {/* key={cartCount} restarts the animation every time the count changes */}
+            <img
+              key={cartCount}
+              src={assets.basket_icon}
+              alt="Cart"
+              className={cartCount > 0 ? "cart-bump" : ""}
+            />
+          </Link>
+          {cartCount > 0 && (
+            <span key={cartCount} className="cart-badge">
+              {cartCount > 99 ? "99+" : cartCount}
+            </span>
+          )}
         </div>
         {!token ? (
           <button onClick={() => setShowLogin(true)}>sign in</button>
