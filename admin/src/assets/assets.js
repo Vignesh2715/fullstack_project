@@ -14,4 +14,5 @@ export const assets ={
     parcel_icon
 }
 
-export const url = 'http://localhost:4000'
+// backend link: set VITE_API_URL on Vercel, falls back to localhost for development
+export const url = (import.meta.env.VITE_API_URL || 'http://localhost:4000').replace(/\/$/, '')

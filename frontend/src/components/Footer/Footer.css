@@ -55,3 +55,8 @@
     text-align: center;
   }
 }
+
+.footer-logo {
+  width: 220px;
+  max-width: 100%;
+}

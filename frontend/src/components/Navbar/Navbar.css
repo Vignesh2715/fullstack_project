@@ -4,8 +4,8 @@
   justify-content: space-between;
   align-items: center;
 }
-.navbar.logo {
-  width: 150px;
+.navbar .logo {
+  width: 200px;
 }
 .navbar-menu {
   display: flex;
@@ -53,7 +53,7 @@
 }
 @media (max-width: 1050px) {
   .navbar .logo {
-    width: 140px;
+    width: 150px;
   }
   .navbar-menu {
     gap: 20px;
@@ -103,7 +103,7 @@
 }
 @media (max-width: 900px) {
   .navbar .logo {
-    width: 120px;
+    width: 130px;
   }
   .navbar-menu {
     gap: 15px;

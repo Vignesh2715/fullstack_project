@@ -9,7 +9,8 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 // placing usermodel from frontend
 
 const placeOrder = async (req, res) => {
-  const frontend_url = "http://localhost:5174";
+  // set FRONTEND_URL in the backend environment (your deployed frontend link)
+  const frontend_url = (process.env.FRONTEND_URL || "http://localhost:5174").replace(/\/$/, "");
 
   try {
     const newOrder = new orderModel({
@@ -30,7 +31,7 @@ const placeOrder = async (req, res) => {
         product_data: {
           name: item.name,
         },
-        unit_amount: item.price * 100 * 90,
+        unit_amount: Math.round(item.price * 100 * 90), // Stripe needs a whole number
       },
       quantity: item.quantity,
     }));

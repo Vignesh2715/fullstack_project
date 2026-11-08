@@ -7,8 +7,13 @@ const StoreContextProvider = (props) => {
 
   const [food_list, setFoodList] = useState([]);
 
-  const url = "http://localhost:4000";
+  // backend link: set VITE_API_URL on Vercel, falls back to localhost for development
+  const url = (import.meta.env.VITE_API_URL || "http://localhost:4000").replace(/\/$/, "");
   const [token, setToken] = useState("");
+
+  // new images are full Cloudinary links, old ones are file names on the backend
+  const imageSrc = (image) =>
+    image && image.startsWith("http") ? image : `${url}/images/${image}`;
 
   // const addToCart = (itemId) => {
   //   if (!cartItems[itemId]) {
@@ -90,14 +95,25 @@ const StoreContextProvider = (props) => {
     }
   };
 
-  const loadCartData = async (token) => {
-    const response = await axios.post(
-      url + "/api/cart/get",
-      {},
-      { headers: { token } },
-    );
+  const loadCartData = async (authToken) => {
+    try {
+      const response = await axios.post(
+        url + "/api/cart/get",
+        {},
+        { headers: { token: authToken } },
+      );
 
-    setCartItems(response.data.cartData);
+      if (response.data.success) {
+        setCartItems(response.data.cartData || {});
+      } else {
+        // expired / invalid token: log out cleanly instead of crashing the page
+        localStorage.removeItem("token");
+        setToken("");
+        setCartItems({});
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   // const storedToken = localStorage.getItem("token");
@@ -113,19 +129,20 @@ const StoreContextProvider = (props) => {
   // }, []);
 
   useEffect(() => {
-    async function loadData() {
-      await fetchFoodList();
+    fetchFoodList();
 
-      const storedToken = localStorage.getItem("token");
-
-      if (storedToken) {
-        setToken(storedToken);
-        await loadCartData(storedToken);
-      }
+    const storedToken = localStorage.getItem("token");
+    if (storedToken) {
+      setToken(storedToken);
     }
-
-    loadData();
   }, []);
+
+  // load the saved cart on page refresh AND right after login
+  useEffect(() => {
+    if (token) {
+      loadCartData(token);
+    }
+  }, [token]);
 
   const contextValue = {
     food_list,
@@ -135,6 +152,7 @@ const StoreContextProvider = (props) => {
     removeFromCart,
     getTotalCartAmount,
     url,
+    imageSrc,
     token,
     setToken,
   };

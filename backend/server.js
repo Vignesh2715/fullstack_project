@@ -1,4 +1,4 @@
-// creating express server module based server we use es6 feature go to package.json and type=module
+// ES-module based Express server (see "type": "module" in package.json)
 import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
@@ -9,23 +9,20 @@ import cartRouter from "./routes/cartRoute.js";
 import orderRouter from "./routes/orderRoute.js";
 dotenv.config();
 
-//app config
-
+// app config
 const app = express();
-const port = 4000;
+const port = process.env.PORT || 4000;
 
-//middleware
-
+// middleware
 app.use(express.json());
 app.use(cors());
 
-//db connection
-
+// db connection
 connectDB();
 
-// api end point
+// api end points
 app.use("/api/food", foodRouter);
-app.use("/images", express.static("uploads"));
+app.use("/images", express.static("uploads")); // only used for old local images
 app.use("/api/user", userRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/order", orderRouter);
@@ -34,8 +31,17 @@ app.get("/", (req, res) => {
   res.send("API WORKING");
 });
 
-app.listen(port, () => {
-  console.log(`Server started on http://localhost:${port}`);
+// error handler (e.g. image too large) -> always answer with JSON
+app.use((err, req, res, next) => {
+  console.log(err);
+  res.json({ success: false, message: err.message || "Error" });
 });
 
-//mongodb+srv://madduri05:7013186280@cluster0.sa7oaku.mongodb.net/?appName=Cluster0
+// Vercel runs the exported app itself; only listen when running locally
+if (!process.env.VERCEL) {
+  app.listen(port, () => {
+    console.log(`Server started on http://localhost:${port}`);
+  });
+}
+
+export default app;
