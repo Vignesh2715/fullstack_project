@@ -18,7 +18,16 @@ app.use(express.json());
 app.use(cors());
 
 // db connection
-connectDB();
+// db connection: make sure the database is connected before every request
+// (works on Vercel, where the server can pause between requests)
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    res.json({ success: false, message: "Database connection failed" });
+  }
+});
 
 // api end points
 app.use("/api/food", foodRouter);
