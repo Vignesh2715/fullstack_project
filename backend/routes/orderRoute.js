@@ -1,5 +1,6 @@
 import express from "express";
 import authMiddleware from "../middleware/auth.js";
+import adminMiddleware from "../middleware/admin.js";
 import {
   listOrders,
   placeOrder,
@@ -8,11 +9,16 @@ import {
   verifyOrder,
 } from "../controllers/orderController.js";
 
+// NOTE: the Stripe webhook route is registered in app.js (it needs the raw body)
 const orderRouter = express.Router();
 
+// customer
 orderRouter.post("/place", authMiddleware, placeOrder);
-orderRouter.post("/verify", verifyOrder);
+orderRouter.post("/verify", authMiddleware, verifyOrder);
 orderRouter.post("/userOrders", authMiddleware, userOrders);
-orderRouter.get("/list", listOrders);
-orderRouter.post("/status", updateStatus);
+
+// admin only
+orderRouter.get("/list", adminMiddleware, listOrders);
+orderRouter.post("/status", adminMiddleware, updateStatus);
+
 export default orderRouter;

@@ -42,18 +42,7 @@
 .navbar-search-icon {
   position: relative;
 }
-/* .navbar-search-icon .dot {
-  position: absolute;
-  min-width: 10px;
-  min-height: 10px;
-  background-color: tomato;
-  border-radius: 5px;
-  top: -8px;
-  right: -8px;
-} */
-
 /* cart count badge */
-
 .cart-badge {
   position: absolute;
   top: -12px;

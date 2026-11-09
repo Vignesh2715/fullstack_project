@@ -7,6 +7,7 @@ import {
 } from "../controllers/foodController.js";
 import multer from "multer";
 import { isCloudinaryConfigured } from "../config/cloudinary.js";
+import adminMiddleware from "../middleware/admin.js";
 
 const foodRouter = express.Router();
 
@@ -31,8 +32,9 @@ const upload = multer({
   },
 });
 
-foodRouter.post("/add", upload.single("image"), addFood);
+// listing is public (customers see the menu); changing the menu is admin only
+foodRouter.post("/add", adminMiddleware, upload.single("image"), addFood);
 foodRouter.get("/list", listFood);
-foodRouter.post("/remove", removeFood);
+foodRouter.post("/remove", adminMiddleware, removeFood);
 
 export default foodRouter;

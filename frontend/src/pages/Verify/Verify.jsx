@@ -4,21 +4,29 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { StoreContext } from "../../context/StoreContext";
 import axios from "axios";
 const Verify = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const success = searchParams.get("success");
+  const [searchParams] = useSearchParams();
   const orderId = searchParams.get("orderId");
-  const { url } = useContext(StoreContext);
+  const { url, setCartItems } = useContext(StoreContext);
   const navigate = useNavigate();
 
   const verifyPayment = async () => {
-    const response = await axios.post(url + "/api/order/verify", {
-      success,
-      orderId,
-    });
-    if (response.data.success) {
-      navigate("/myorders");
-    } else {
-      navigate("/");
+    try {
+      // The server asks Stripe whether the order was really paid.
+      // (the login token is read straight from localStorage: this page opens fresh after Stripe)
+      const response = await axios.post(
+        url + "/api/order/verify",
+        { orderId },
+        { headers: { token: localStorage.getItem("token") || "" } },
+      );
+      if (response.data.success) {
+        setCartItems({}); // the server emptied the saved cart after the payment
+        navigate("/myorders");
+      } else {
+        navigate("/cart");
+      }
+    } catch (error) {
+      console.log(error);
+      navigate("/cart");
     }
   };
 

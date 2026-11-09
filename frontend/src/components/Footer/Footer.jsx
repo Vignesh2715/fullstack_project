@@ -7,9 +7,10 @@ const Footer = () => {
       <div className="footer-content">
         <div className="footer-content-left">
           <img className="footer-logo" src={assets.logo} alt="Food Mate" />
-          {/* <p>
-            HI my name is M.Vignesh this website is created by me.learning while building
-          </p> */}
+          <p>
+            HI my name is M.Vignesh this website is created by me. tutorial
+            based website learning while building
+          </p>
           <div className="footer-social-icons">
             <img src={assets.facebook_icon} alt="" />
             <img src={assets.twitter_icon} alt="" />

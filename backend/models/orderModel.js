@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 const orderSchema = new mongoose.Schema({
   userId: { type: String, required: true },
+  stripeSessionId: { type: String }, // used to ask Stripe if the order was really paid
   items: { type: Array, required: true },
   amount: { type: Number, required: true },
   address: { type: Object, required: true },

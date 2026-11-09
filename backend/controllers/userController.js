@@ -27,8 +27,9 @@ const loginUser = async (req, res) => {
   }
 };
 
+// tokens expire after 7 days, then the user has to login again
 const createToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET);
+  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 };
 // register user
 const registerUser = async (req, res) => {
@@ -73,4 +74,26 @@ const registerUser = async (req, res) => {
   }
 };
 
-export { loginUser, registerUser };
+// admin panel login: same checks as a normal login, but only admins get a token
+const adminLogin = async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const user = await userModel.findOne({ email });
+
+    // same message for every failure, so nobody can find out which emails exist
+    const fail = () =>
+      res.json({ success: false, message: "Invalid admin credentials" });
+
+    if (!user || user.role !== "admin") return fail();
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return fail();
+
+    res.json({ success: true, token: createToken(user._id) });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: "Error" });
+  }
+};
+
+export { loginUser, registerUser, adminLogin };

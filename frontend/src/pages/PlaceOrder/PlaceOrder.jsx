@@ -35,19 +35,28 @@ const PlaceOrder = () => {
         orderItems.push(itemInfo);
       }
     });
+    // only WHICH dish and HOW MANY go to the server; prices and the total are
+    // calculated there, so they can't be changed from the browser
     let orderData = {
       address: data,
-      items: orderItems,
-      amount: getTotalCartAmount() + 2,
+      items: orderItems.map((item) => ({
+        _id: item._id,
+        quantity: item.quantity,
+      })),
     };
-    let response = await axios.post(url + "/api/order/place", orderData, {
-      headers: { token },
-    });
-    if (response.data.success) {
-      const { session_url } = response.data;
-      window.location.replace(session_url);
-    } else {
-      alert("Error");
+    try {
+      let response = await axios.post(url + "/api/order/place", orderData, {
+        headers: { token },
+      });
+      if (response.data.success) {
+        const { session_url } = response.data;
+        window.location.replace(session_url);
+      } else {
+        alert(response.data.message || "Error");
+      }
+    } catch (error) {
+      console.log(error);
+      alert("Cannot reach the server. Please try again.");
     }
   };
 

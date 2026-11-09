@@ -6,6 +6,8 @@ const userSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     cartData: { type: Object, default: {} },
+    // "admin" can use the admin panel APIs, everybody else is a normal customer
+    role: { type: String, enum: ["user", "admin"], default: "user" },
   },
   { minimize: false },
 );
